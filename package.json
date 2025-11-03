@@ -11,6 +11,7 @@
     "lint:fix": "eslint --fix --no-ignore",
     "lint:quiet": "eslint --quiet",
     "lint:strict": "eslint --fix --max-warnings=0",
+    "lint:report": "npx eslint -f html -o ESLintReport.html",
     "format": "prettier",
     "check": "prettier --write . && eslint --fix --no-ignore",
     "prepare": "husky"
