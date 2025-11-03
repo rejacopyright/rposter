@@ -8,8 +8,12 @@
     "serve": "vite preview",
     "test": "vitest run",
     "lint": "eslint",
+    "lint:fix": "eslint --fix --no-ignore",
+    "lint:quiet": "eslint --quiet",
+    "lint:strict": "eslint --fix --max-warnings=0",
     "format": "prettier",
-    "check": "prettier --write . && eslint --fix"
+    "check": "prettier --write . && eslint --fix --no-ignore",
+    "prepare": "husky"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
@@ -57,11 +61,19 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.3.0",
+    "husky": "^9.1.7",
     "jsdom": "^27.1.0",
+    "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
     "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3",
     "vite": "^7.1.12",
     "vitest": "^4.0.6"
+  },
+  "lint-staged": {
+    "app/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix --no-ignore",
+      "prettier --write"
+    ]
   }
 }
