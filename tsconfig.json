@@ -39,7 +39,7 @@
     "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
-      "@pages/*": ["./src/pages/*"],
+      "@views/*": ["src/views/*"],
       "@components/*": ["./src/components/*"],
       "@styles/*": ["./src/styles/*"],
       "@hooks/*": ["./src/hooks/*"],

@@ -1,23 +1,24 @@
 import { StrictMode } from 'react'
+import { createRouter, RouterProvider } from '@tanstack/react-router'
+
 import ReactDOM from 'react-dom/client'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
 
-import * as TanStackQueryProvider from './integrations/tanstack-query/root-provider.tsx'
+import {
+  Provider as TanStackQueryProvider,
+  queryClient,
+} from '@/integrations/tanstack-query/root-provider'
 
+import reportWebVitals from './reportWebVitals'
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
 
-import './styles.css'
-import reportWebVitals from './reportWebVitals.ts'
+import '@styles/styles.css'
 
 // Create a new router instance
 
-const TanStackQueryProviderContext = TanStackQueryProvider.getContext()
 const router = createRouter({
   routeTree,
-  context: {
-    ...TanStackQueryProviderContext,
-  },
+  context: { queryClient },
   defaultPreload: 'intent',
   scrollRestoration: true,
   defaultStructuralSharing: true,
@@ -37,10 +38,10 @@ if (rootElement && !rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <StrictMode>
-      <TanStackQueryProvider.Provider {...TanStackQueryProviderContext}>
+      <TanStackQueryProvider>
         <RouterProvider router={router} />
-      </TanStackQueryProvider.Provider>
-    </StrictMode>,
+      </TanStackQueryProvider>
+    </StrictMode>
   )
 }
 
