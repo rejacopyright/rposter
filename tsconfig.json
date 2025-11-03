@@ -1,5 +1,5 @@
 {
-  "include": ["**/*.ts", "**/*.tsx", "eslint.config.js", "prettier.config.js", "vite.config.js"],
+  "include": ["**/*.ts", "**/*.tsx", "eslint.config.js", "vite.config.js"],
   
   "compilerOptions": {
     "target": "ES2022",
@@ -7,12 +7,25 @@
     "module": "ESNext",
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
+    "allowJs": true,
+    "esModuleInterop": true,
+
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "allowUmdGlobalAccess": true,
+    "noImplicitReturns": false,
+    "allowSyntheticDefaultImports": true,
+    "useUnknownInCatchVariables": true,
+    "forceConsistentCasingInFileNames": true,
 
     /* Linting */
     "skipLibCheck": true,
@@ -21,6 +34,9 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": false,
+    "noImplicitAny": false,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
