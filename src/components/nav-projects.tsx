@@ -1,81 +1,46 @@
 'use client'
 
-import { Folder, Forward, type LucideIcon, MoreHorizontal, Trash2 } from 'lucide-react'
+import { PencilLine } from 'lucide-react'
 
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from '@/components/ui/sidebar'
 
-export function NavProjects({
-  projects,
-}: {
-  projects: Array<{
-    name: string
-    url: string
-    icon: LucideIcon
-  }>
-}) {
-  const { isMobile } = useSidebar()
+type ItemProps = {
+  id?: string
+  name?: string
+}
 
+export function NavProjects() {
+  const projects: Array<ItemProps> = [
+    { id: '1', name: 'Lorem ipsum is placeholder text commonly used in the graphic' },
+    { id: '2', name: 'Lorem ipsum is placeholder text commonly used in the graphic' },
+  ]
   return (
     <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
-      <SidebarGroupLabel>Projects</SidebarGroupLabel>
+      <SidebarGroupLabel className='pb-4'>GENERATED POSTER</SidebarGroupLabel>
       <SidebarMenu>
-        {projects.map((item) => (
-          <SidebarMenuItem key={item.name}>
-            <SidebarMenuButton asChild>
-              <a href={item.url}>
-                <item.icon />
-                <span>{item.name}</span>
-              </a>
-            </SidebarMenuButton>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuAction showOnHover>
-                  <MoreHorizontal />
-                  <span className='sr-only'>More</span>
-                </SidebarMenuAction>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className='w-48 rounded-lg'
-                side={isMobile ? 'bottom' : 'right'}
-                align={isMobile ? 'end' : 'start'}>
-                <DropdownMenuItem>
-                  <Folder className='text-muted-foreground' />
-                  <span>View Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <Forward className='text-muted-foreground' />
-                  <span>Share Project</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Trash2 className='text-muted-foreground' />
-                  <span>Delete Project</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        ))}
         <SidebarMenuItem>
-          <SidebarMenuButton className='text-sidebar-foreground/70'>
-            <MoreHorizontal className='text-sidebar-foreground/70' />
-            <span>More</span>
+          <SidebarMenuButton asChild>
+            <div className='h-9 cursor-pointer'>
+              <PencilLine />
+              <span className=''>Create new poster</span>
+            </div>
           </SidebarMenuButton>
         </SidebarMenuItem>
+        {projects.map((item) => (
+          <SidebarMenuItem key={item.id}>
+            <SidebarMenuButton asChild>
+              <div className='h-9 cursor-pointer'>
+                <span className=''>{item.name}</span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        ))}
       </SidebarMenu>
     </SidebarGroup>
   )

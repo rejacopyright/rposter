@@ -3,7 +3,7 @@ import * as React from 'react'
 
 import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { PanelLeftIcon } from 'lucide-react'
+import { ChevronsLeftIcon, ChevronsRightIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -240,7 +240,7 @@ function Sidebar({
 }
 
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar } = useSidebar()
+  const { toggleSidebar, state } = useSidebar()
 
   return (
     <Button
@@ -254,7 +254,11 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
         toggleSidebar()
       }}
       {...props}>
-      <PanelLeftIcon />
+      {state === 'expanded' ? (
+        <ChevronsLeftIcon className='text-gray-400 size-5' />
+      ) : (
+        <ChevronsRightIcon className='text-gray-400 size-5' />
+      )}
       <span className='sr-only'>Toggle Sidebar</span>
     </Button>
   )
