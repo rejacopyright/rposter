@@ -1,13 +1,23 @@
 import React, { memo, useEffect, useState } from 'react'
 
 interface ImagePreviewProps {
-  file: File | string | null
+  file?: File | string | null
   size?: number
+  full?: 'width' | 'height'
+  fill?: 'contain' | 'cover'
 }
 
-const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({ file, size = 150 }) => {
+const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({
+  file,
+  size,
+  full = 'width',
+  fill = 'contain',
+}) => {
   const [imageURL, setImageURL] = useState<string | null>(null)
-  const [dimensions, setDimensions] = useState<{ width: number; height: number }>({
+  const [dimensions, setDimensions] = useState<{
+    width?: number | string
+    height?: number | string
+  }>({
     width: size,
     height: size,
   })
@@ -27,7 +37,7 @@ const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({ file, size = 150 }
       setImageURL(url)
     }
 
-    if (url) {
+    if (url && size) {
       const img = new Image()
       img.src = url
       img.onload = () => {
@@ -40,22 +50,28 @@ const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({ file, size = 150 }
         })
       }
     }
+    if (!size) {
+      setDimensions({
+        width: full === 'width' ? 'auto' : '100%',
+        height: full === 'height' ? 'auto' : '100%',
+      })
+    }
 
     return () => {
       if (file instanceof File && url) {
         // URL.revokeObjectURL(url)
       }
     }
-  }, [file, size])
+  }, [file, size, full])
 
   return (
     <div
-      className='border rounded-lg bg-gray-100/10'
+      className='border rounded-lg border-gray-200/75 bg-gray-100/50'
       style={{
         width: dimensions.width,
         height: dimensions.height,
         backgroundImage: imageURL ? `url(${imageURL})` : undefined,
-        backgroundSize: 'contain',
+        backgroundSize: fill,
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
       }}
@@ -63,4 +79,4 @@ const ImagePreviewComponent: React.FC<ImagePreviewProps> = ({ file, size = 150 }
   )
 }
 
-export const ImagePreview = memo(ImagePreviewComponent, (prev, next) => prev.file === next.file)
+export const ImagePreview = memo(ImagePreviewComponent)

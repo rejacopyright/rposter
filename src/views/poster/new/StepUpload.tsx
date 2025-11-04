@@ -1,4 +1,4 @@
-import { type ChangeEvent, useEffect, useRef, useState } from 'react'
+import { type ChangeEvent, useEffect, useRef } from 'react'
 
 import { ActionButton } from '@components/custom/button'
 import { ImagePreview } from '@components/custom/viewer'
@@ -7,45 +7,34 @@ import { useAudioRecorder } from '@hooks/useAudioRecorder'
 import { usePosterForm } from '@hooks/usePosterForm'
 import type { WizardStepProps } from '@ts/wizardStep'
 import { ArrowRight, Mic, Plus, Square, UploadCloud } from 'lucide-react'
+import { useWatch } from 'react-hook-form'
 
 export const StepUpload = (props: WizardStepProps) => {
   const { onNext } = props
   const { isRecording, audioFile: auFile, startRecording, stopRecording } = useAudioRecorder()
-  const { setValue, watch } = usePosterForm()
+  const { setValue, control } = usePosterForm()
 
-  const imageFile = watch('image')
-  const audioFile = watch('audio')
-
-  const [, setTicked] = useState<number>(0)
+  const { image: imageFile, audio: audioFile } = useWatch({ control })
 
   const imageRef = useRef<HTMLInputElement>(null)
   const audioRef = useRef<HTMLInputElement>(null)
 
   const handleImageFile = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]
-    if (f) {
-      setValue('image', f, { shouldValidate: true })
-      setTicked((t) => t + 1)
-    }
+    if (f) setValue('image', f, { shouldValidate: true })
   }
 
   const handleAudioFile = (e: ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0]
-    if (f) {
-      setValue('audio', f, { shouldValidate: true })
-      setTicked((t) => t + 1)
-    }
+    if (f) setValue('audio', f, { shouldValidate: true })
   }
 
   useEffect(() => {
-    if (auFile) {
-      setValue('audio', auFile, { shouldValidate: true })
-      setTicked((t) => t + 1)
-    }
+    if (auFile) setValue('audio', auFile, { shouldValidate: true })
   }, [auFile, setValue])
 
   return (
-    <>
+    <div className='md:w-3/4 lg:w-2/3 mx-auto'>
       <input
         type='file'
         className='hidden'
@@ -73,7 +62,7 @@ export const StepUpload = (props: WizardStepProps) => {
             <>
               <UploadCloud className='w-6 h-6 text-gray-500 mb-2' />
               <div className=''>Upload your product image</div>
-              <div className='text-[10pt] text-gray-500'>
+              <div className='text-[10pt] text-gray-500 text-center'>
                 Drag and drop your file here or click to browse. Supports JPG & PNG up to 10 MB.
               </div>
             </>
@@ -122,6 +111,6 @@ export const StepUpload = (props: WizardStepProps) => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   )
 }
