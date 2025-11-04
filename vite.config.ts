@@ -24,6 +24,7 @@ export default defineConfig({
       '@api': fileURLToPath(new URL('./src/api', import.meta.url)),
       '@helpers': fileURLToPath(new URL('./src/helpers', import.meta.url)),
       '@lib': fileURLToPath(new URL('./src/lib', import.meta.url)),
+      '@ts': fileURLToPath(new URL('./src/types', import.meta.url)),
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },

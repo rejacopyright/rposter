@@ -46,6 +46,7 @@
       "@api/*": ["./src/api/*"],
       "@helpers/*": ["./src/helpers/*"],
       "@lib/*": ["./src/lib/*"],
+      "@ts/*": ["./src/types/*"],
       "@/*": ["./src/*"],
     }
   }

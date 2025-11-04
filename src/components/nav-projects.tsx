@@ -1,5 +1,7 @@
 'use client'
 
+import { Link } from '@tanstack/react-router'
+
 import { PencilLine } from 'lucide-react'
 
 import {
@@ -26,10 +28,10 @@ export function NavProjects() {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <div className='h-9 cursor-pointer'>
+            <Link to='/poster/new' className='h-9 cursor-pointer'>
               <PencilLine />
               <span className=''>Create new poster</span>
-            </div>
+            </Link>
           </SidebarMenuButton>
         </SidebarMenuItem>
         {projects.map((item) => (

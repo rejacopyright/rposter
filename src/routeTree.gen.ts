@@ -8,39 +8,74 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
+import { createFileRoute } from '@tanstack/react-router'
+
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PosterNewRouteImport } from './routes/poster/new'
+import { Route as PosterLayoutRouteImport } from './routes/poster/_layout'
 
+const PosterRouteImport = createFileRoute('/poster')()
+
+const PosterRoute = PosterRouteImport.update({
+  id: '/poster',
+  path: '/poster',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PosterNewRoute = PosterNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => PosterRoute,
+} as any)
+const PosterLayoutRoute = PosterLayoutRouteImport.update({
+  id: '/_layout',
+  getParentRoute: () => PosterRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/poster': typeof PosterLayoutRoute
+  '/poster/new': typeof PosterNewRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/poster': typeof PosterLayoutRoute
+  '/poster/new': typeof PosterNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/poster': typeof PosterRouteWithChildren
+  '/poster/_layout': typeof PosterLayoutRoute
+  '/poster/new': typeof PosterNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/poster' | '/poster/new'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/poster' | '/poster/new'
+  id: '__root__' | '/' | '/poster' | '/poster/_layout' | '/poster/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  PosterRoute: typeof PosterRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/poster': {
+      id: '/poster'
+      path: '/poster'
+      fullPath: '/poster'
+      preLoaderRoute: typeof PosterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +83,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/poster/new': {
+      id: '/poster/new'
+      path: '/new'
+      fullPath: '/poster/new'
+      preLoaderRoute: typeof PosterNewRouteImport
+      parentRoute: typeof PosterRoute
+    }
+    '/poster/_layout': {
+      id: '/poster/_layout'
+      path: '/poster'
+      fullPath: '/poster'
+      preLoaderRoute: typeof PosterLayoutRouteImport
+      parentRoute: typeof PosterRoute
+    }
   }
 }
 
+interface PosterRouteChildren {
+  PosterLayoutRoute: typeof PosterLayoutRoute
+  PosterNewRoute: typeof PosterNewRoute
+}
+
+const PosterRouteChildren: PosterRouteChildren = {
+  PosterLayoutRoute: PosterLayoutRoute,
+  PosterNewRoute: PosterNewRoute,
+}
+
+const PosterRouteWithChildren =
+  PosterRoute._addFileChildren(PosterRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  PosterRoute: PosterRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
