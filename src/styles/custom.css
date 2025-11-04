@@ -1,6 +1,6 @@
 @layer base {
   .btn-action {
-    @apply flex items-center justify-center px-4 h-10 rounded-lg text-white font-semibold shadow-md hover:brightness-125 focus:outline-none transition-all duration-200 ease-in-out select-none;
+    @apply flex items-center justify-center px-4 h-10 rounded-lg font-semibold shadow-md hover:brightness-125 focus:outline-none transition-all duration-200 ease-in-out select-none;
   }
   .timeline-horizontal {
     @apply absolute top-1/2 h-0.5 -translate-y-1/2 rounded-full z-0;
@@ -9,6 +9,7 @@
 
 @layer utilities {
   .bg-primary-radial {
+    color: white !important;
     background: radial-gradient(
       circle 45px at 50% 100%,
       var(--primary-light) 0%,

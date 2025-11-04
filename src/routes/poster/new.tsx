@@ -1,5 +1,6 @@
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router'
 
+import { PosterFormProvider } from '@hooks/usePosterForm'
 import { StepProcessing } from '@views/poster/new/StepProcessing'
 import { StepResults } from '@views/poster/new/StepResults'
 import { StepSettings } from '@views/poster/new/StepSettings'
@@ -35,18 +36,22 @@ export default function PosterNewPage() {
   const ActiveStep = steps.find((s) => s.id === step)?.component ?? StepUpload
 
   return (
-    <div className='md:w-3/4 lg:w-2/3 mx-auto py-12'>
-      <h1 className='text-[16pt] font-medium text-center'>Create Your Poster</h1>
-      <h1 className='text-[12pt] text-center text-gray-500 mb-10'>
-        Upload your files and let AI do the magic
-      </h1>
+    <PosterFormProvider>
+      <form>
+        <div className='md:w-3/4 lg:w-2/3 mx-auto py-5'>
+          <h1 className='text-[16pt] font-medium text-center'>Create Your Poster</h1>
+          <h1 className='text-[12pt] text-center text-gray-500 mb-10'>
+            Upload your files and let AI do the magic
+          </h1>
 
-      <WizardSteps currentStep={step} steps={steps} />
+          <WizardSteps currentStep={step} steps={steps} />
 
-      <div className='mt-8'>
-        <ActiveStep onNext={nextStep} onPrev={prevStep} />
-      </div>
-    </div>
+          <div className='mt-8'>
+            <ActiveStep onNext={nextStep} onPrev={prevStep} />
+          </div>
+        </div>
+      </form>
+    </PosterFormProvider>
   )
 }
 
