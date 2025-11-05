@@ -6,8 +6,10 @@ import { ImagePreview } from '@components/custom/viewer'
 import { Button } from '@components/ui/button'
 import { useAudioRecorder } from '@hooks/useAudioRecorder'
 import { usePosterForm } from '@hooks/usePosterForm'
+import { compressImage } from '@lib/uplooader'
+import { cn } from '@lib/utils'
 import type { WizardStepProps } from '@ts/poster'
-import { ArrowRight, Mic, Plus, Square, UploadCloud } from 'lucide-react'
+import { ArrowRight, Loader2, Mic, Plus, Square, UploadCloud } from 'lucide-react'
 import { useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -16,6 +18,8 @@ export const StepUpload = (props: WizardStepProps) => {
   const { isRecording, audioFile: auFile, startRecording, stopRecording } = useAudioRecorder()
   const { setValue, control } = usePosterForm()
 
+  const [isDrag, setIsDrag] = useState<boolean>(false)
+  const [isCompressing, setIsCompressing] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const { image: imageFile, audio: audioFile } = useWatch({ control })
@@ -23,9 +27,32 @@ export const StepUpload = (props: WizardStepProps) => {
   const imageRef = useRef<HTMLInputElement>(null)
   const audioRef = useRef<HTMLInputElement>(null)
 
-  const handleImageFile = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageFile = async (e: ChangeEvent<HTMLInputElement>) => {
+    setIsCompressing(true)
     const f = e.target.files?.[0]
-    if (f) setValue('image', f, { shouldValidate: true })
+    if (f) {
+      const thisFile = await compressImage(f)
+      setValue('image', thisFile, { shouldValidate: true })
+    }
+    if (imageRef.current) imageRef.current.value = ''
+    setIsCompressing(false)
+  }
+
+  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setIsDrag(true)
+  }
+
+  const handleFileDrop = async (event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    setIsDrag(false)
+    setIsCompressing(true)
+    if (event.dataTransfer.files.length > 0) {
+      const thisFile = await compressImage(event.dataTransfer.files[0])
+      setValue('image', thisFile, { shouldValidate: true })
+    }
+    if (imageRef.current) imageRef.current.value = ''
+    setIsCompressing(false)
   }
 
   const handleAudioFile = (e: ChangeEvent<HTMLInputElement>) => {
@@ -69,8 +96,15 @@ export const StepUpload = (props: WizardStepProps) => {
         onChange={handleAudioFile}
         accept='.mp3, .m4a, .wav, audio/mpeg, audio/mp4, audio/wav'
       />
-      <div className='flex flex-col items-center justify-center border-3 border-gray-100 bg-gray-100/10 rounded-lg p-1 w-full h-[60vh] shadow-sm'>
+      <div
+        className={cn(
+          'flex flex-col items-center justify-center border-3 border-gray-100 rounded-lg p-1 w-full h-[60vh] shadow-sm',
+          isDrag ? 'bg-primary-radial' : 'bg-gray-100/10'
+        )}>
         <div
+          onDragOver={handleDragOver}
+          onDragLeave={() => setIsDrag(false)}
+          onDrop={handleFileDrop}
           className='cursor-pointer flex flex-col flex-1 w-full items-center justify-center p-5'
           onClick={() => imageRef.current?.click()}>
           {imageFile ? (
@@ -80,8 +114,14 @@ export const StepUpload = (props: WizardStepProps) => {
             </>
           ) : (
             <>
-              <UploadCloud className='w-6 h-6 text-gray-500 mb-2' />
-              <div className=''>Upload your product image</div>
+              {isCompressing ? (
+                <Loader2 size={25} className='animate-spin text-gray-500 mb-2' />
+              ) : (
+                <UploadCloud size={25} className='text-gray-500 mb-2' />
+              )}
+              <div className=''>
+                {isCompressing ? 'Preparing image...' : 'Upload your product image'}
+              </div>
               <div className='text-[10pt] text-gray-500 text-center'>
                 Drag and drop your file here or click to browse. Supports JPG & PNG up to 10 MB.
               </div>
@@ -117,11 +157,11 @@ export const StepUpload = (props: WizardStepProps) => {
 
           <Button
             type='button'
-            variant='ghost'
+            variant={isRecording ? 'secondary' : 'ghost'}
             size='icon'
             className='text-muted-foreground'
             onClick={isRecording ? stopRecording : startRecording}>
-            {isRecording ? <Square className='w-4 h-4' /> : <Mic className='w-4 h-4' />}
+            {isRecording ? <Square className='w-4 h-4' fill='#000' /> : <Mic className='w-4 h-4' />}
           </Button>
           <div className='ms-1'>
             <ActionButton
