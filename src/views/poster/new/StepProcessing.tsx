@@ -219,6 +219,9 @@ export const StepProcessing = (props?: WizardStepProps) => {
                                 )}
                               />
                             )}
+                            {isActive && !isLast && (
+                              <div className='absolute left-[18px] top-5 w-1 h-[calc(50%+8px)] z-0 bg-primary' />
+                            )}
 
                             {/* Step icon */}
                             <motion.div
@@ -233,7 +236,7 @@ export const StepProcessing = (props?: WizardStepProps) => {
                                 isCompleted
                                   ? 'bg-primary text-white border-primary'
                                   : isActive
-                                    ? 'bg-gray-100 text-primary border-gray-200'
+                                    ? 'bg-primary-radial text-primary'
                                     : 'bg-gray-100 text-gray-500 border-gray-100'
                               )}>
                               {isCompleted ? (
