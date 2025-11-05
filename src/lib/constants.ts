@@ -1,9 +1,15 @@
+import type { TabResultProps } from '@ts/poster'
+import { TabCode } from '@views/poster/new/tab-result/TabCode'
+import { TabGrid } from '@views/poster/new/tab-result/TabGrid'
+import { TabList } from '@views/poster/new/tab-result/TabList'
 import {
   AudioLines,
   Blend,
   CodeXml,
   Expand,
   GalleryHorizontalEnd,
+  LayoutGrid,
+  List,
   Spotlight,
   TextCursorInput,
   Wand,
@@ -58,4 +64,10 @@ export const steps = [
     title: 'Converting to Images',
     desc: 'Converting HTML designs to high-quality images',
   },
+]
+
+export const tabResultValue: Array<TabResultProps> = [
+  { value: 'list', icon: List, content: TabList },
+  { value: 'grid', icon: LayoutGrid, content: TabGrid },
+  { value: 'code', icon: CodeXml, content: TabCode },
 ]

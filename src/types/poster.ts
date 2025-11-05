@@ -1,3 +1,6 @@
+import type { LucideProps } from 'lucide-react'
+import type { ComponentType } from 'react'
+
 export interface WizardStepProps {
   onNext?: (params?: { [key: string]: any }) => void
   onPrev?: () => void
@@ -21,4 +24,12 @@ export type PosterFormProps = {
   paddingRatio?: PaddingRatio
   useCase?: string
   assetConfig?: JSONString
+}
+
+export type TabContentProps = { data: any; variantId?: string }
+
+export type TabResultProps = {
+  value: 'list' | 'grid' | 'code'
+  icon: ComponentType<LucideProps>
+  content: ComponentType<TabContentProps>
 }
