@@ -131,3 +131,13 @@ export const copyTextToClipboard = async (text: string = '') => {
     toast.error('Failed to copy text')
   }
 }
+
+export const toSize = (bytes?: number, decimals: number = 2): string => {
+  if (!bytes) return '-'
+  const k = 1000
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  const size = bytes / Math.pow(k, i)
+  const displaySize = size < 1 && i > 0 ? size.toFixed(decimals) : Math.round(size).toString()
+  return `${displaySize} ${sizes[i]}`
+}

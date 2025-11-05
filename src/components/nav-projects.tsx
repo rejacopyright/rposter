@@ -44,6 +44,7 @@ export function NavProjects() {
             <div
               className={cn('h-9 cursor-pointer flex items-center gap-2', {
                 'bg-gray-200/50': location.pathname === '/poster/new',
+                hidden: location.pathname !== '/poster/new',
               })}>
               <span>Untitled</span>
             </div>
