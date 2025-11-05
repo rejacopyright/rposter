@@ -1,18 +1,22 @@
-import { type ChangeEvent, useEffect, useRef } from 'react'
+import { type ChangeEvent, useEffect, useRef, useState } from 'react'
 
+import { createJob } from '@api/poster'
 import { ActionButton } from '@components/custom/button'
 import { ImagePreview } from '@components/custom/viewer'
 import { Button } from '@components/ui/button'
 import { useAudioRecorder } from '@hooks/useAudioRecorder'
 import { usePosterForm } from '@hooks/usePosterForm'
-import type { WizardStepProps } from '@ts/wizardStep'
+import type { WizardStepProps } from '@ts/poster'
 import { ArrowRight, Mic, Plus, Square, UploadCloud } from 'lucide-react'
 import { useWatch } from 'react-hook-form'
+import { toast } from 'sonner'
 
 export const StepUpload = (props: WizardStepProps) => {
   const { onNext } = props
   const { isRecording, audioFile: auFile, startRecording, stopRecording } = useAudioRecorder()
   const { setValue, control } = usePosterForm()
+
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   const { image: imageFile, audio: audioFile } = useWatch({ control })
 
@@ -32,6 +36,22 @@ export const StepUpload = (props: WizardStepProps) => {
   useEffect(() => {
     if (auFile) setValue('audio', auFile, { shouldValidate: true })
   }, [auFile, setValue])
+
+  const { mutateAsync }: any = createJob()
+  const handleSubmit = async () => {
+    setIsLoading(true)
+    try {
+      const res = await mutateAsync()
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Success')
+        onNext?.({ id: res?.data?.jobId })
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || 'Failed to create job')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className='md:w-3/4 lg:w-2/3 mx-auto'>
@@ -104,7 +124,10 @@ export const StepUpload = (props: WizardStepProps) => {
             {isRecording ? <Square className='w-4 h-4' /> : <Mic className='w-4 h-4' />}
           </Button>
           <div className='ms-1'>
-            <ActionButton disabled={!imageFile || !audioFile} onClick={onNext}>
+            <ActionButton
+              disabled={!imageFile || !audioFile}
+              onClick={handleSubmit}
+              isLoading={isLoading}>
               <span className='mr-2'>Next</span>
               <ArrowRight size={20} />
             </ActionButton>

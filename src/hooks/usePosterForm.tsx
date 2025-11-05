@@ -1,32 +1,14 @@
 import { createContext, useContext } from 'react'
 
+import type { PosterFormProps } from '@ts/poster'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 
-type PaddingRatio = 0 | 0.1 | 0.2 | 0.3 | 0.4 | 0.5 | 0.6 | 0.7 | 0.8 | 0.9 | 1
-type JSONString = string & { key: 'value' }
-
-export type FormValues = {
-  image?: File
-  audio?: File
-  language?: 'en' | 'ar' | string
-  orientation?: 'horizontal' | 'vertical' | 'square'
-  size?: string
-  productPosition?: 'left' | 'right' | 'top' | 'bottomm' | 'center'
-  backgroundColor?: string
-  customWidth?: number
-  customHeight?: number
-  minimalPadding?: boolean
-  paddingRatio?: PaddingRatio
-  useCase?: string
-  assetConfig?: JSONString
-}
-
-const defaultValues: FormValues = {
+const defaultValues: PosterFormProps = {
   image: undefined,
   audio: undefined,
   language: 'en',
   orientation: 'vertical',
-  size: 'vertical_standard',
+  size: 'standard',
   productPosition: 'center',
   backgroundColor: 'white',
   customWidth: undefined,
@@ -37,10 +19,10 @@ const defaultValues: FormValues = {
   assetConfig: undefined,
 }
 
-const FormContext = createContext<UseFormReturn<FormValues> | null>(null)
+const FormContext = createContext<UseFormReturn<PosterFormProps> | null>(null)
 
 export const PosterFormProvider = ({ children }: { children: React.ReactNode }) => {
-  const methods = useForm<FormValues>({ defaultValues, mode: 'onChange' })
+  const methods = useForm<PosterFormProps>({ defaultValues, mode: 'onChange' })
 
   return <FormContext.Provider value={methods}>{children}</FormContext.Provider>
 }

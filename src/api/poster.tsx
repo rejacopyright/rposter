@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import axios from '@lib/axios'
 
@@ -7,5 +7,47 @@ export const getPosterPresets = () => {
     queryKey: ['getPosterPresets'],
     queryFn: () => axios.get('poster-presets'),
     select: ({ data }) => data?.presets || {},
+  })
+}
+
+export const getJobStatus = (id: string) => {
+  return useQuery({
+    queryKey: ['getJobStatus'],
+    queryFn: () => axios.get(`jobs/${id}/processing-status`),
+    select: ({ data }) => data || {},
+    refetchInterval: 5000,
+    enabled: !!id,
+  })
+}
+
+export const getJobResult = (id: string) => {
+  return useQuery({
+    queryKey: ['getJobResult'],
+    queryFn: () => axios.get(`jobs/${id}/results`),
+    select: ({ data }) => data || {},
+    enabled: !!id,
+  })
+}
+
+export const createJob = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => axios.post('jobs/create'),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['getJobs'], exact: false })
+    },
+  })
+}
+
+export const uploadJob = (id: string) => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: FormData) =>
+      axios.post(`jobs/${id}/upload`, data, {
+        headers: { Accept: 'text/event-stream', 'Content-Type': 'multipart/form-data' },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['getJobs'], exact: false })
+    },
   })
 }

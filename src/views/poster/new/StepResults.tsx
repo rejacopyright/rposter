@@ -1,4 +1,4 @@
-import type { WizardStepProps } from '@ts/wizardStep'
+import type { WizardStepProps } from '@ts/poster'
 
 export const StepResults = (_props: WizardStepProps) => {
   return (

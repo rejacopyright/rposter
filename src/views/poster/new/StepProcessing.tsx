@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
+import { useSearch } from '@tanstack/react-router'
 
-import { getPosterPresets } from '@api/poster'
+import { getJobStatus, getPosterPresets } from '@api/poster'
 import { ActionButton } from '@components/custom/button'
-import { ImagePreview } from '@components/custom/viewer'
 import {
   Accordion,
   AccordionContent,
@@ -10,135 +10,86 @@ import {
   AccordionTrigger,
 } from '@components/ui/accordion'
 import { Button } from '@components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs'
 import { usePosterForm } from '@hooks/usePosterForm'
-import { snakeToCamel } from '@lib/fn'
+import { API_SERVER } from '@lib/axios'
+import { steps } from '@lib/constants'
+import { snakeToCamel, takeLast } from '@lib/fn'
 import { cn } from '@lib/utils'
-import type { WizardStepProps } from '@ts/wizardStep'
+import type { WizardStepProps } from '@ts/poster'
 import { motion } from 'framer-motion'
 import groupBy from 'lodash/groupBy'
 import mapValues from 'lodash/mapValues'
 import startCase from 'lodash/startCase'
-import {
-  ArrowLeft,
-  ArrowRight,
-  AudioLines,
-  Blend,
-  CircleCheck,
-  CodeXml,
-  Expand,
-  GalleryHorizontalEnd,
-  Loader2,
-  Spotlight,
-  TextCursorInput,
-  Wand,
-} from 'lucide-react'
+import { ArrowLeft, ArrowRight, CircleCheck, Loader2 } from 'lucide-react'
 import { useWatch } from 'react-hook-form'
-
-const steps = [
-  {
-    id: 'transcription',
-    icon: AudioLines,
-    title: 'Transcribing Audio',
-    desc: 'Converting speech to text using AI',
-  },
-  {
-    id: 'copy_generation',
-    icon: TextCursorInput,
-    title: 'Generating Copy',
-    desc: 'Creating marketing content in multiple languages',
-  },
-  {
-    id: 'studio_transform',
-    icon: Spotlight,
-    title: 'Studio Transformation',
-    desc: 'Applying professional photography effects',
-  },
-  {
-    id: 'canvas_expand',
-    icon: Expand,
-    title: 'Canvas Expansion',
-    desc: 'Intelligently expanding image canvas',
-  },
-  {
-    id: 'image_blend',
-    icon: Blend,
-    title: 'Image Blending',
-    desc: 'Merging elements for cohesive design',
-  },
-  {
-    id: 'upscale',
-    icon: Wand,
-    title: '4K Upscaling',
-    desc: 'Enhancing resolution to 4K quality',
-  },
-  {
-    id: 'design_generation',
-    icon: CodeXml,
-    title: 'Generating Designs',
-    desc: 'Creating multiple design variations',
-  },
-  {
-    id: 'html_to_image',
-    icon: GalleryHorizontalEnd,
-    title: 'Converting to Images',
-    desc: 'Converting HTML designs to high-quality images',
-  },
-]
+import { toast } from 'sonner'
 
 export const StepProcessing = (props?: WizardStepProps) => {
+  const search: any = useSearch({ from: '/poster/new' })
   const { onNext, onPrev } = props || {}
   const { control } = usePosterForm()
-  const { orientation, size, backgroundColor, image: imageFile } = useWatch({ control })
+  const { orientation, size, backgroundColor } = useWatch({ control })
 
   const [currentStep, setCurrentStep] = useState(0)
   const [completed, setCompleted] = useState(false)
 
-  useEffect(() => {
-    if (currentStep < steps.length) {
-      const t = setTimeout(() => setCurrentStep((prev) => prev + 1), 2000)
-      return () => clearTimeout(t)
-    } else {
-      setCompleted(true)
-    }
-  }, [currentStep])
+  const { data } = getJobStatus(search?.id)
 
   // useEffect(() => {
-  //   const eventSource = new EventSource(
-  //     'https://ai-poster-api-staging.hi-lab.ai/api/jobs/6543f7a8b9c1d2e3f4a5b6c7/process'
-  //   )
-
-  //   eventSource.onmessage = (event) => {
-  //     const data = JSON.parse(event.data)
-  //     switch (data.type) {
-  //       case 'step_start': {
-  //         const index = steps.findIndex((s) => s.id === data.step)
-  //         if (index !== -1) setCurrentStep(index)
-  //         break
-  //       }
-  //       case 'step_complete': {
-  //         setCurrentStep((prev) => Math.min(prev + 1, steps.length))
-  //         break
-  //       }
-  //       case 'pipeline_complete': {
-  //         setCompleted(true)
-  //         eventSource.close()
-  //         break
-  //       }
-  //       case 'pipeline_error': {
-  //         console.error('Pipeline failed:', data.error)
-  //         eventSource.close()
-  //         break
-  //       }
-  //     }
+  //   if (currentStep < steps.length) {
+  //     const t = setTimeout(() => setCurrentStep((prev) => prev + 1), 2000)
+  //     return () => clearTimeout(t)
+  //   } else {
+  //     setCompleted(true)
   //   }
+  // }, [currentStep])
 
-  //   eventSource.onerror = (err) => {
-  //     console.error('SSE connection error:', err)
-  //     eventSource.close()
-  //   }
+  useEffect(() => {
+    if (!search?.id || !data?.status) return
+    if (data?.status === 'failed') toast.error('Failed to connect to SSE stream')
+    if (data?.status !== 'completed') {
+      setCurrentStep(data?.progress?.completed || 1)
+    } else {
+      setCurrentStep((data?.progress?.completed || 1) + 1)
+      setCompleted(true)
+    }
+    if (!['created', 'processing', 'completed'].includes(data?.status)) {
+      const eventSource = new EventSource(`${API_SERVER}/api/jobs/${search.id}/process`)
+      eventSource.onopen = () => toast.success('Connected to SSE stream')
+      eventSource.onmessage = (event) => {
+        const dt = JSON.parse(event.data)
+        switch (dt.type) {
+          case 'step_start': {
+            const index = steps.findIndex((s) => s.id === dt.step)
+            if (index !== -1) setCurrentStep(index)
+            break
+          }
+          case 'step_complete': {
+            setCurrentStep((prev) => Math.min(prev + 1, steps.length))
+            break
+          }
+          case 'pipeline_complete': {
+            setCompleted(true)
+            eventSource.close()
+            break
+          }
+          case 'pipeline_error': {
+            toast.error('Pipeline failed')
+            eventSource.close()
+            break
+          }
+        }
+      }
 
-  //   return () => eventSource.close()
-  // }, [])
+      eventSource.onerror = () => {
+        toast.error('SSE connection error')
+        eventSource.close()
+      }
+
+      return () => eventSource.close()
+    }
+  }, [currentStep, data, search.id])
 
   const progressPercent = Math.min((currentStep / steps.length) * 100, 100)
   const thisStep = steps[currentStep] || steps[steps.length - 1]
@@ -162,11 +113,14 @@ export const StepProcessing = (props?: WizardStepProps) => {
   const dimension = sizes?.find(({ value }) => value === size)?.dimensions
   const ratio: number = parseFloat(((dimension?.width || 1) / (dimension?.height || 1)).toFixed(1))
 
+  const last3 = takeLast(data?.partialResults?.designs, 3)
+  const transcription = data?.partialResults?.transcription
+
   return (
     <>
       <div className='md:w-3/4 xl:w-2/3 mx-auto'>
         <div className='flex flex-wrap gap-6 pt-4 w-full'>
-          {/* Left form */}
+          {/* Left Side */}
           <div className='w-1/2 space-y-2 border rounded-xl h-min'>
             <div className='px-5 pt-5 h-[85px]'>
               <p className='text-lg font-semibold text-gray-900'>
@@ -277,26 +231,44 @@ export const StepProcessing = (props?: WizardStepProps) => {
             </Accordion>
           </div>
 
-          {/* Right Preview */}
+          {/* Right Side */}
           <div className='flex-1 h-min bg-gray-50 rounded-lg p-4 sticky top-5'>
             <div className='font-semibold mb-1'>Preview</div>
-            <div
-              className={cn(
-                'p-4 bg-white rounded-xl shadow-lg my-10 md:w-4/5 xl:w-3/4 mx-auto overflow-hidden',
-                `aspect-[${ratio}]`
-              )}
-              style={{ backgroundColor: snakeToCamel(backgroundColor) }}>
-              <div className='w-1/2'>
-                <div className='mt-2 aspect-square'>
-                  <ImagePreview file={imageFile} fill='cover' />
-                </div>
+            {last3.length > 0 && last3[0]?.imageUrl ? (
+              <Tabs defaultValue='variant_1' className='mt-3 mb-5'>
+                <TabsList>
+                  {last3.map((_, index: number) => (
+                    <TabsTrigger key={index} value={`variant_${index + 1}`}>
+                      Variant {index + 1}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                {last3.map((item: any, index: number) => {
+                  return (
+                    <TabsContent key={index} value={`variant_${index + 1}`}>
+                      <div
+                        className={cn(
+                          'bg-white rounded-xl shadow-lg my-5 md:w-4/5 xl:w-3/4 mx-auto overflow-hidden'
+                        )}
+                        style={{ backgroundColor: snakeToCamel(backgroundColor) }}>
+                        <img src={item?.imageUrl} alt='' className='w-full' />
+                      </div>
+                    </TabsContent>
+                  )
+                })}
+              </Tabs>
+            ) : (
+              <div
+                className={cn(
+                  'p-4 bg-gray-100 rounded-xl shadow-lg my-10 md:w-4/5 xl:w-3/4 mx-auto relative overflow-hidden',
+                  `aspect-[${ratio}]`
+                )}>
+                <div className='absolute inset-0 shimmer z-0' />
               </div>
-            </div>
+            )}
             <div className=''>
               <div className='font-semibold text-sm'>Audio Transcription</div>
-              <div className='text-xs'>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              </div>
+              <div className='text-xs'>{transcription || 'transcribing'}...</div>
             </div>
           </div>
         </div>
@@ -307,7 +279,7 @@ export const StepProcessing = (props?: WizardStepProps) => {
             <ArrowLeft size={20} />
             <span>Previous</span>
           </Button>
-          <ActionButton onClick={onNext}>
+          <ActionButton onClick={onNext} disabled={data?.status !== 'completed'}>
             <span className='mr-2'>Generate</span>
             <ArrowRight size={20} />
           </ActionButton>

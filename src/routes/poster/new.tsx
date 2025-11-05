@@ -21,15 +21,19 @@ export default function PosterNewPage() {
 
   const step = Number(search.step ?? 1)
 
-  const nextStep = () =>
+  const nextStep = (params) =>
     navigate({
-      search: { step: Math.min(step + 1, steps.length) },
+      search: {
+        ...search,
+        step: Math.min(step + 1, steps.length),
+        ...(params?.id ? { id: params?.id } : {}),
+      },
       replace: true,
     })
 
   const prevStep = () =>
     navigate({
-      search: { step: Math.max(step - 1, 1) },
+      search: { ...search, step: Math.max(step - 1, 1) },
       replace: true,
     })
 

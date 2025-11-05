@@ -1,6 +1,7 @@
-import React from 'react'
+import { useState } from 'react'
+import { useSearch } from '@tanstack/react-router'
 
-import { getPosterPresets } from '@api/poster'
+import { getPosterPresets, uploadJob } from '@api/poster'
 import { ActionButton } from '@components/custom/button'
 import { ImagePreview } from '@components/custom/viewer'
 import { Button } from '@components/ui/button'
@@ -14,14 +15,17 @@ import {
 } from '@components/ui/select'
 import { Switch } from '@components/ui/switch'
 import { usePosterForm } from '@hooks/usePosterForm'
-import { snakeToCamel } from '@lib/fn'
+import { snakeToCamel, toFormData } from '@lib/fn'
 import { cn } from '@lib/utils'
-import type { WizardStepProps } from '@ts/wizardStep'
+import type { JSONString, WizardStepProps } from '@ts/poster'
 import groupBy from 'lodash/groupBy'
+import last from 'lodash/last'
 import mapValues from 'lodash/mapValues'
+import omit from 'lodash/omit'
 import startCase from 'lodash/startCase'
 import { ArrowLeft, ArrowRight, CircleMinus } from 'lucide-react'
 import { useWatch } from 'react-hook-form'
+import { toast } from 'sonner'
 
 const LANGUAGES = [
   { label: 'English', value: 'en' },
@@ -49,8 +53,9 @@ const IMAGES_ICONS = [
 ]
 
 export const StepSettings = (props?: WizardStepProps) => {
+  const search: any = useSearch({ from: '/poster/new' })
   const { onNext, onPrev } = props || {}
-  const { setValue, control } = usePosterForm()
+  const { setValue, control, getValues } = usePosterForm()
 
   const {
     language,
@@ -62,27 +67,57 @@ export const StepSettings = (props?: WizardStepProps) => {
     image: imageFile,
   } = useWatch({ control })
 
-  const [selectedFonts, setSelectedFonts] = React.useState<Array<string>>([])
-  const [selectedAssets, setSelectedAssets] = React.useState<Array<string>>([])
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [selectedFonts, setSelectedFonts] = useState<Array<string>>([])
+  const [selectedAssets, setSelectedAssets] = useState<Array<string>>([])
+  const mergeAssets = { fonts: selectedFonts, images: selectedAssets }
+
+  const assetConfigMutator = (value: Partial<typeof mergeAssets>) => {
+    const formattedResult = { ...mergeAssets, ...value }
+    setValue('assetConfig', JSON.stringify(formattedResult) as JSONString, {
+      shouldValidate: true,
+      shouldDirty: true,
+    })
+  }
 
   // Handler toggle all fonts
   const handleToggleAllFonts = (checked: boolean) => {
-    if (checked) setSelectedFonts(FONTS.map((f) => f.key))
-    else setSelectedFonts([])
+    if (checked) {
+      const result = FONTS.map((f) => f.key)
+      setSelectedFonts(result)
+      assetConfigMutator({ fonts: result })
+    } else {
+      setSelectedFonts([])
+      assetConfigMutator({ fonts: [] })
+    }
   }
   // Handler toggle font
   const handleToggleFont = (key: string, checked: boolean) => {
-    setSelectedFonts((prev) => (checked ? [...prev, key] : prev.filter((k) => k !== key)))
+    setSelectedFonts((prev) => {
+      const result = checked ? [...prev, key] : prev.filter((k) => k !== key)
+      assetConfigMutator({ fonts: result })
+      return result
+    })
   }
 
   // Handler toggle all assets
   const handleToggleAllAssets = (checked: boolean) => {
-    if (checked) setSelectedAssets(IMAGES_ICONS.map((a) => a.key))
-    else setSelectedAssets([])
+    if (checked) {
+      const result = IMAGES_ICONS.map((a) => a.key)
+      setSelectedAssets(result)
+      assetConfigMutator({ images: result })
+    } else {
+      setSelectedAssets([])
+      assetConfigMutator({ images: [] })
+    }
   }
   // Handler toggle asset
   const handleToggleAsset = (key: string, checked: boolean) => {
-    setSelectedAssets((prev) => (checked ? [...prev, key] : prev.filter((k) => k !== key)))
+    setSelectedAssets((prev) => {
+      const result = checked ? [...prev, key] : prev.filter((k) => k !== key)
+      assetConfigMutator({ images: result })
+      return result
+    })
   }
 
   const posterPresetsQuery = getPosterPresets()
@@ -92,7 +127,7 @@ export const StepSettings = (props?: WizardStepProps) => {
   const grouped = groupBy(sizeData, 'orientation')
   const formattedSizes: object | undefined = mapValues(grouped, (items) =>
     items.map((item) => ({
-      value: item?.key,
+      value: last(item?.key?.split('_')),
       label: `${startCase(item?.type)} (${item?.dimensions?.width} x ${item?.dimensions?.height})`,
       dimensions: item?.dimensions,
     }))
@@ -106,6 +141,25 @@ export const StepSettings = (props?: WizardStepProps) => {
 
   // GET POSITIONS
   const backgroundColors = posterPresets?.backgroundColors || []
+
+  const { mutateAsync }: any = uploadJob(search?.id)
+  const handleSubmit = async () => {
+    setIsLoading(true)
+    const getVal = getValues()
+    const values = omit(getVal, [])
+    const formData = toFormData(values)
+    try {
+      const res = await mutateAsync(formData)
+      if (res?.data?.success) {
+        toast.success(res?.data?.message || 'Success')
+        onNext?.()
+      }
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || 'Failed to create job')
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <>
@@ -312,7 +366,7 @@ export const StepSettings = (props?: WizardStepProps) => {
             <div
               className={cn(
                 'p-4 bg-white rounded-xl shadow-lg mt-10 md:w-4/5 xl:w-3/4 mx-auto overflow-hidden',
-                `aspect-[${ratio}]`
+                ratio ? `aspect-[${ratio}]` : 'aspect-[0.6]'
               )}
               style={{ backgroundColor: snakeToCamel(backgroundColor) }}>
               <div className='w-1/2'>
@@ -353,7 +407,7 @@ export const StepSettings = (props?: WizardStepProps) => {
             <ArrowLeft size={20} />
             <span>Previous</span>
           </Button>
-          <ActionButton onClick={onNext}>
+          <ActionButton onClick={handleSubmit} isLoading={isLoading}>
             <span className='mr-2'>Generate</span>
             <ArrowRight size={20} />
           </ActionButton>
