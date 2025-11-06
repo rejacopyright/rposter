@@ -63,7 +63,7 @@ export function NavProjects() {
         })}
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <Link to='/poster/new' className='h-9 cursor-pointer flex items-center gap-2'>
+            <Link to='/gallery' className='h-9 cursor-pointer flex items-center gap-2'>
               <MoreHorizontal />
               <span>More Designs</span>
             </Link>

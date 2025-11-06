@@ -54,26 +54,30 @@ export const urlToFile = async (url: string, name: string) => {
 }
 
 export const downloadImage = async ({ url, fileName = 'downloaded-file' }) => {
-  const { blob }: any = await urlToFile(url, fileName)
-  let ext: any = 'txt'
-  switch (blob?.type?.split(';')?.[0]) {
-    case 'image/png':
-      ext = 'png'
-      break
-    case 'image/jpeg':
-      ext = 'jpg'
-      break
+  try {
+    const { blob }: any = await urlToFile(url, fileName)
+    let ext: any = 'txt'
+    switch (blob?.type?.split(';')?.[0]) {
+      case 'image/png':
+        ext = 'png'
+        break
+      case 'image/jpeg':
+        ext = 'jpg'
+        break
+    }
+    const uri = window.URL.createObjectURL(new Blob([blob]))
+    const link = document.createElement('a')
+    link.href = uri
+    link.download = `${fileName}.${ext}`
+    document.body.appendChild(link)
+
+    link.click()
+
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(uri)
+  } catch (error) {
+    toast.error(error?.toString())
   }
-  const uri = window.URL.createObjectURL(new Blob([blob]))
-  const link = document.createElement('a')
-  link.href = uri
-  link.download = `${fileName}.${ext}`
-  document.body.appendChild(link)
-
-  link.click()
-
-  document.body.removeChild(link)
-  window.URL.revokeObjectURL(uri)
 }
 
 export const downloadImageReady = async (id: string, variant: string | number = 1) => {

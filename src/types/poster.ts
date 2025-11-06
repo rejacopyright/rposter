@@ -39,4 +39,5 @@ export type JobParamProps = {
   limit?: number
   status?: 'created' | 'uploaded' | 'processing' | 'completed' | 'failed'
   includeDesigns?: boolean
+  [key: string]: any
 }

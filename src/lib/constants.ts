@@ -1,4 +1,7 @@
+import type { TabGalleryProps } from '@ts/gallery'
 import type { TabResultProps } from '@ts/poster'
+import { GalleryGrid } from '@views/gallery/tab/GalleryGrid'
+import { GalleryList } from '@views/gallery/tab/GalleryList'
 import { TabCode } from '@views/poster/new/tab-result/TabCode'
 import { TabGrid } from '@views/poster/new/tab-result/TabGrid'
 import { TabList } from '@views/poster/new/tab-result/TabList'
@@ -70,4 +73,9 @@ export const tabResultValue: Array<TabResultProps> = [
   { value: 'list', icon: List, content: TabList },
   { value: 'grid', icon: LayoutGrid, content: TabGrid },
   { value: 'code', icon: CodeXml, content: TabCode },
+]
+
+export const tabGallery: Array<TabGalleryProps> = [
+  { value: 'list', icon: List, content: GalleryList },
+  { value: 'grid', icon: LayoutGrid, content: GalleryGrid },
 ]

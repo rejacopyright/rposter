@@ -12,6 +12,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as GalleryIndexRouteImport } from './routes/gallery/index'
 import { Route as PosterNewRouteImport } from './routes/poster/new'
 import { Route as PosterLayoutRouteImport } from './routes/poster/_layout'
 import { Route as PosterIdDetailRouteImport } from './routes/poster/$id.detail'
@@ -26,6 +27,11 @@ const PosterRoute = PosterRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryIndexRoute = GalleryIndexRouteImport.update({
+  id: '/gallery/',
+  path: '/gallery/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PosterNewRoute = PosterNewRouteImport.update({
@@ -47,12 +53,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/poster': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
+  '/gallery': typeof GalleryIndexRoute
   '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/poster': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
+  '/gallery': typeof GalleryIndexRoute
   '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRoutesById {
@@ -61,25 +69,28 @@ export interface FileRoutesById {
   '/poster': typeof PosterRouteWithChildren
   '/poster/_layout': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
+  '/gallery/': typeof GalleryIndexRoute
   '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/poster' | '/poster/new' | '/poster/$id/detail'
+  fullPaths: '/' | '/poster' | '/poster/new' | '/gallery' | '/poster/$id/detail'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/poster' | '/poster/new' | '/poster/$id/detail'
+  to: '/' | '/poster' | '/poster/new' | '/gallery' | '/poster/$id/detail'
   id:
     | '__root__'
     | '/'
     | '/poster'
     | '/poster/_layout'
     | '/poster/new'
+    | '/gallery/'
     | '/poster/$id/detail'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PosterRoute: typeof PosterRouteWithChildren
+  GalleryIndexRoute: typeof GalleryIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -96,6 +107,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery/': {
+      id: '/gallery/'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/poster/new': {
@@ -140,6 +158,7 @@ const PosterRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PosterRoute: PosterRouteWithChildren,
+  GalleryIndexRoute: GalleryIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

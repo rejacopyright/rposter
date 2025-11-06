@@ -250,7 +250,7 @@ export const StepProcessing = (props?: WizardStepProps) => {
                 <div className='absolute inset-0 shimmer z-0' />
                 <div className='blur-xss relative'>
                   <Lottie animationData={AILoader} loop={true} />
-                  <div className='absolute left-1/2 right-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-27 h-27 bg-white rounded-full blur opacity-80' />
+                  <div className='absolute left-1/2 right-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 bg-white rounded-full blur opacity-80' />
                 </div>
               </div>
             )}
