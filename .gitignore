@@ -8,4 +8,5 @@ count.txt
 .nitro
 .tanstack
 .wrangler
+tsconfig.tsbuildinfo
 ESLintReport.html
