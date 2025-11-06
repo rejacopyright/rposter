@@ -14,7 +14,7 @@
     "lint:report": "npx eslint -f html -o ESLintReport.html",
     "format": "prettier",
     "check": "prettier --write . && eslint --fix --no-ignore",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -81,7 +81,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.3.0",
-    "husky": "^9.1.7",
+    "husky": "^8.0.0",
     "jsdom": "^27.1.0",
     "lint-staged": "^16.2.6",
     "prettier": "^3.6.2",
