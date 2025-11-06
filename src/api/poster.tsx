@@ -31,10 +31,18 @@ export const getJobStatus = (id: string) => {
 
 export const getJobResult = (id: string) => {
   return useQuery({
-    queryKey: ['getJobResult'],
+    queryKey: ['getJobResult', { id }],
     queryFn: () => axios.get(`jobs/${id}/results`),
     select: ({ data }) => data || {},
     enabled: !!id,
+  })
+}
+
+export const getJobDetail = (id: string) => {
+  return useQuery({
+    queryKey: ['getJobDetail', { id }],
+    queryFn: () => axios.get(`jobs/${id}/status`),
+    select: ({ data }) => data || {},
   })
 }
 

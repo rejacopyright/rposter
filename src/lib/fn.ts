@@ -153,3 +153,18 @@ export const toSize = (bytes?: number, decimals: number = 2): string => {
   const displaySize = size < 1 && i > 0 ? size.toFixed(decimals) : Math.round(size).toString()
   return `${displaySize} ${sizes[i]}`
 }
+
+export const randomString = (
+  length: number = 64,
+  options: { specialChar?: boolean } = {}
+): string => {
+  const { specialChar = true } = options
+
+  const alphaNum = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  const special = '!@#$%^&*()_+-=[]{}|;:,.<>?'
+  const chars = specialChar ? alphaNum + special : alphaNum
+
+  return Array.from({ length })
+    .map(() => chars[Math.floor(Math.random() * chars.length)])
+    .join('')
+}
