@@ -42,7 +42,7 @@ export default function PosterNewPage() {
   return (
     <PosterFormProvider>
       <form>
-        <div className='py-5'>
+        <div className='py-5 mt-3'>
           <h1 className='text-[16pt] font-medium text-center'>Create Your Poster</h1>
           <h1 className='text-[12pt] text-center text-gray-500 mb-10'>
             Upload your files and let AI do the magic

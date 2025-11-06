@@ -19,7 +19,7 @@ export const GalleryPage = () => {
 
   return (
     <div className='lg:px-10'>
-      <div className='sticky top-0 pt-4 pb-2 bg-white z-10'>
+      <div className='sticky top-0 pt-5 pb-2 bg-white z-10'>
         <div className='mb-4'>
           <div className='font-medium'>Gallery</div>
           <div className='text-sm text-gray-500'>Browse your Al-generated poster collection</div>

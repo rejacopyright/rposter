@@ -20,7 +20,7 @@ export const PosterDetail = () => {
 
   return (
     <div className='md:w-3/4 xl:w-2/3 mx-auto'>
-      <div className='sticky top-0 pt-4 pb-2 bg-white'>
+      <div className='sticky top-0 pt-5 pb-2 bg-white z-10'>
         <Button
           variant='ghost'
           asChild
