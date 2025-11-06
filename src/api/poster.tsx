@@ -10,6 +10,14 @@ export const getPosterPresets = () => {
   })
 }
 
+export const getJobs = (params?: any) => {
+  return useQuery({
+    queryKey: ['getJobs'],
+    queryFn: () => axios.get('jobs', { params }),
+    select: ({ data }) => data || [],
+  })
+}
+
 export const getJobStatus = (id: string) => {
   return useQuery({
     queryKey: ['getJobStatus'],
@@ -51,6 +59,3 @@ export const uploadJob = (id: string) => {
     },
   })
 }
-
-export const getDownloadUrl = (id: string, variant: string | number = 1) =>
-  axios.get(`jobs/${id}/download/${variant}`)

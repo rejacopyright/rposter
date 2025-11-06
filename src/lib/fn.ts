@@ -1,5 +1,7 @@
 import { toast } from 'sonner'
 
+import axios from './axios'
+
 export const snakeToCamel = (str?: string): string => {
   return str?.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()) || 'white'
 }
@@ -72,6 +74,16 @@ export const downloadImage = async ({ url, fileName = 'downloaded-file' }) => {
 
   document.body.removeChild(link)
   window.URL.revokeObjectURL(uri)
+}
+
+export const downloadImageReady = async (id: string, variant: string | number = 1) => {
+  if (id) {
+    const res = await axios.get(`jobs/${id}/download/${variant}`)
+    const downloadUrl = res.data?.downloadUrl
+    if (downloadUrl) {
+      window.open(downloadUrl, '_blank')
+    }
+  }
 }
 
 export const copyImageToClipboard = async ({ url, fileName = 'downloaded-file' }) => {
