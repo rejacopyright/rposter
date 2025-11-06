@@ -79,3 +79,10 @@ export const tabGallery: Array<TabGalleryProps> = [
   { value: 'list', icon: List, content: GalleryList },
   { value: 'grid', icon: LayoutGrid, content: GalleryGrid },
 ]
+
+export const dashboardStats = [
+  { value: '10K+', label: 'Posters Created' },
+  { value: '95%', label: 'Success Rate' },
+  { value: '30s', label: 'Avg. Processing' },
+  { value: '4K', label: 'Resolution' },
+]
