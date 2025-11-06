@@ -12,6 +12,7 @@ import { createFileRoute } from '@tanstack/react-router'
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PromptsIndexRouteImport } from './routes/prompts/index'
 import { Route as GalleryIndexRouteImport } from './routes/gallery/index'
 import { Route as PosterNewRouteImport } from './routes/poster/new'
 import { Route as PosterLayoutRouteImport } from './routes/poster/_layout'
@@ -27,6 +28,11 @@ const PosterRoute = PosterRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PromptsIndexRoute = PromptsIndexRouteImport.update({
+  id: '/prompts/',
+  path: '/prompts/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryIndexRoute = GalleryIndexRouteImport.update({
@@ -54,6 +60,7 @@ export interface FileRoutesByFullPath {
   '/poster': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
   '/gallery': typeof GalleryIndexRoute
+  '/prompts': typeof PromptsIndexRoute
   '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/poster': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
   '/gallery': typeof GalleryIndexRoute
+  '/prompts': typeof PromptsIndexRoute
   '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRoutesById {
@@ -70,13 +78,26 @@ export interface FileRoutesById {
   '/poster/_layout': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
   '/gallery/': typeof GalleryIndexRoute
+  '/prompts/': typeof PromptsIndexRoute
   '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/poster' | '/poster/new' | '/gallery' | '/poster/$id/detail'
+  fullPaths:
+    | '/'
+    | '/poster'
+    | '/poster/new'
+    | '/gallery'
+    | '/prompts'
+    | '/poster/$id/detail'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/poster' | '/poster/new' | '/gallery' | '/poster/$id/detail'
+  to:
+    | '/'
+    | '/poster'
+    | '/poster/new'
+    | '/gallery'
+    | '/prompts'
+    | '/poster/$id/detail'
   id:
     | '__root__'
     | '/'
@@ -84,6 +105,7 @@ export interface FileRouteTypes {
     | '/poster/_layout'
     | '/poster/new'
     | '/gallery/'
+    | '/prompts/'
     | '/poster/$id/detail'
   fileRoutesById: FileRoutesById
 }
@@ -91,6 +113,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   PosterRoute: typeof PosterRouteWithChildren
   GalleryIndexRoute: typeof GalleryIndexRoute
+  PromptsIndexRoute: typeof PromptsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -107,6 +130,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/prompts/': {
+      id: '/prompts/'
+      path: '/prompts'
+      fullPath: '/prompts'
+      preLoaderRoute: typeof PromptsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery/': {
@@ -159,6 +189,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   PosterRoute: PosterRouteWithChildren,
   GalleryIndexRoute: GalleryIndexRoute,
+  PromptsIndexRoute: PromptsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

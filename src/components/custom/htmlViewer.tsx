@@ -23,10 +23,12 @@ export const HTMLViewer = ({ html, label = 'HTML Code' }: { html: string; label?
                 value={html}
                 extensions={[langs.html(), EditorView.lineWrapping]}
                 readOnly
+                editable={false}
                 basicSetup={{
                   lineNumbers: false,
                   foldGutter: false,
-                  syntaxHighlighting: true,
+                  highlightActiveLine: false,
+                  highlightActiveLineGutter: false,
                 }}
               />
               <div className='absolute top-0 right-0 pe-5 pt-1'>
