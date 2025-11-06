@@ -25,6 +25,8 @@ export default defineConfig({
       '@helpers': fileURLToPath(new URL('./src/helpers', import.meta.url)),
       '@lib': fileURLToPath(new URL('./src/lib', import.meta.url)),
       '@ts': fileURLToPath(new URL('./src/types', import.meta.url)),
+      '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
+      '@lottie': fileURLToPath(new URL('./src/assets/lottie', import.meta.url)),
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },

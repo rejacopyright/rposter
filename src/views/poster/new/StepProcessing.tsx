@@ -16,8 +16,10 @@ import { API_SERVER } from '@lib/axios'
 import { steps } from '@lib/constants'
 import { snakeToCamel, takeLast } from '@lib/fn'
 import { cn } from '@lib/utils'
+import AILoader from '@lottie/AILoader.json'
 import type { WizardStepProps } from '@ts/poster'
 import { motion } from 'framer-motion'
+import Lottie from 'lottie-react'
 import { ArrowLeft, ArrowRight, CircleCheck, Loader2 } from 'lucide-react'
 import { useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -246,6 +248,10 @@ export const StepProcessing = (props?: WizardStepProps) => {
                   `aspect-square`
                 )}>
                 <div className='absolute inset-0 shimmer z-0' />
+                <div className='blur-xss relative'>
+                  <Lottie animationData={AILoader} loop={true} />
+                  <div className='absolute left-1/2 right-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-27 h-27 bg-white rounded-full blur opacity-80' />
+                </div>
               </div>
             )}
             <div className=''>

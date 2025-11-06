@@ -33,3 +33,10 @@ export type TabResultProps = {
   icon: ComponentType<LucideProps>
   content: ComponentType<TabContentProps>
 }
+
+export type JobParamProps = {
+  page?: number
+  limit?: number
+  status?: 'created' | 'uploaded' | 'processing' | 'completed' | 'failed'
+  includeDesigns?: boolean
+}

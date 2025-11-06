@@ -2,8 +2,9 @@
 
 import { Link, useLocation } from '@tanstack/react-router'
 
+import { getJobs } from '@api/poster'
 import { cn } from '@lib/utils'
-import { PencilLine } from 'lucide-react'
+import { MoreHorizontal, PencilLine } from 'lucide-react'
 
 import {
   SidebarGroup,
@@ -13,19 +14,10 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 
-type ItemProps = {
-  id?: string
-  name?: string
-  url?: string
-}
-
 export function NavProjects() {
   const location = useLocation() // dapatkan URL saat ini
 
-  const projects: Array<ItemProps> = [
-    { id: '1', name: 'Lorem ipsum dolor sit amet', url: '/poster/123/detail' },
-    { id: '2', name: 'Lorem ipsum dolor sit amet consectetur', url: '/poster/234/detail' },
-  ]
+  const { data = [] } = getJobs({ limit: 10, status: 'completed' })
 
   return (
     <SidebarGroup className='group-data-[collapsible=icon]:hidden'>
@@ -51,22 +43,32 @@ export function NavProjects() {
           </SidebarMenuButton>
         </SidebarMenuItem>
 
-        {projects.map((item) => {
-          const isActive = location.pathname.startsWith(item.url || '')
+        {data.map((item) => {
+          const id: string = item?.id || ''
+          const isActive = location.pathname.startsWith(`/poster/${id}/detail`)
           return (
-            <SidebarMenuItem key={item.id}>
+            <SidebarMenuItem key={id}>
               <SidebarMenuButton asChild>
                 <Link
-                  to={item.url || '#'}
+                  to={`/poster/$id/detail`}
+                  params={{ id }}
                   className={cn('h-9 cursor-pointer flex items-center gap-2', {
                     'bg-gray-200/50': isActive,
                   })}>
-                  <span>{item.name}</span>
+                  <span>{item?.transcription || 'Untitled'}</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           )
         })}
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild>
+            <Link to='/poster/new' className='h-9 cursor-pointer flex items-center gap-2'>
+              <MoreHorizontal />
+              <span>More Designs</span>
+            </Link>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
   )

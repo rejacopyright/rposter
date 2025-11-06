@@ -14,6 +14,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PosterNewRouteImport } from './routes/poster/new'
 import { Route as PosterLayoutRouteImport } from './routes/poster/_layout'
+import { Route as PosterIdDetailRouteImport } from './routes/poster/$id.detail'
 
 const PosterRouteImport = createFileRoute('/poster')()
 
@@ -36,16 +37,23 @@ const PosterLayoutRoute = PosterLayoutRouteImport.update({
   id: '/_layout',
   getParentRoute: () => PosterRoute,
 } as any)
+const PosterIdDetailRoute = PosterIdDetailRouteImport.update({
+  id: '/$id/detail',
+  path: '/$id/detail',
+  getParentRoute: () => PosterRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/poster': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
+  '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/poster': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
+  '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,20 @@ export interface FileRoutesById {
   '/poster': typeof PosterRouteWithChildren
   '/poster/_layout': typeof PosterLayoutRoute
   '/poster/new': typeof PosterNewRoute
+  '/poster/$id/detail': typeof PosterIdDetailRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/poster' | '/poster/new'
+  fullPaths: '/' | '/poster' | '/poster/new' | '/poster/$id/detail'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/poster' | '/poster/new'
-  id: '__root__' | '/' | '/poster' | '/poster/_layout' | '/poster/new'
+  to: '/' | '/poster' | '/poster/new' | '/poster/$id/detail'
+  id:
+    | '__root__'
+    | '/'
+    | '/poster'
+    | '/poster/_layout'
+    | '/poster/new'
+    | '/poster/$id/detail'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -97,17 +112,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PosterLayoutRouteImport
       parentRoute: typeof PosterRoute
     }
+    '/poster/$id/detail': {
+      id: '/poster/$id/detail'
+      path: '/$id/detail'
+      fullPath: '/poster/$id/detail'
+      preLoaderRoute: typeof PosterIdDetailRouteImport
+      parentRoute: typeof PosterRoute
+    }
   }
 }
 
 interface PosterRouteChildren {
   PosterLayoutRoute: typeof PosterLayoutRoute
   PosterNewRoute: typeof PosterNewRoute
+  PosterIdDetailRoute: typeof PosterIdDetailRoute
 }
 
 const PosterRouteChildren: PosterRouteChildren = {
   PosterLayoutRoute: PosterLayoutRoute,
   PosterNewRoute: PosterNewRoute,
+  PosterIdDetailRoute: PosterIdDetailRoute,
 }
 
 const PosterRouteWithChildren =

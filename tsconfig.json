@@ -47,6 +47,8 @@
       "@helpers/*": ["./src/helpers/*"],
       "@lib/*": ["./src/lib/*"],
       "@ts/*": ["./src/types/*"],
+      "@assets/*": ["./src/assets/*"],
+      "@lottie/*": ["./src/assets/lottie/*"],
       "@/*": ["./src/*"],
     }
   }

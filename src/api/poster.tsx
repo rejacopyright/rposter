@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import axios from '@lib/axios'
+import type { JobParamProps } from '@ts/poster'
 
 export const getPosterPresets = () => {
   return useQuery({
@@ -10,11 +11,11 @@ export const getPosterPresets = () => {
   })
 }
 
-export const getJobs = (params?: any) => {
+export const getJobs = (params?: JobParamProps) => {
   return useQuery({
-    queryKey: ['getJobs'],
+    queryKey: ['getJobs', { ...(params || {}) }],
     queryFn: () => axios.get('jobs', { params }),
-    select: ({ data }) => data || [],
+    select: ({ data }) => data?.data || [],
   })
 }
 

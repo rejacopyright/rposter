@@ -8,7 +8,9 @@ import { useAudioRecorder } from '@hooks/useAudioRecorder'
 import { usePosterForm } from '@hooks/usePosterForm'
 import { compressImage } from '@lib/uplooader'
 import { cn } from '@lib/utils'
+import VoiceWave from '@lottie/VoiceWave.json'
 import type { WizardStepProps } from '@ts/poster'
+import Lottie from 'lottie-react'
 import { ArrowRight, Loader2, Mic, Plus, Square, UploadCloud } from 'lucide-react'
 import { useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -127,14 +129,20 @@ export const StepUpload = (props: WizardStepProps) => {
               </div>
             </>
           )}
-          {!!audioFile && (
-            <div className='mt-1 w-3/4 scale-75'>
-              <audio
-                controls
-                src={URL.createObjectURL(audioFile)}
-                className='mt-2 w-full rounded-md'
-              />
+          {isRecording ? (
+            <div className='mt-1 w-3/4 h-15'>
+              <Lottie className='h-10 mt-2' animationData={VoiceWave} loop={true} />
             </div>
+          ) : (
+            !!audioFile && (
+              <div className='mt-1 w-3/4 scale-75 h-15'>
+                <audio
+                  controls
+                  src={URL.createObjectURL(audioFile)}
+                  className='mt-2 w-full rounded-md'
+                />
+              </div>
+            )
           )}
         </div>
         <div className='flex w-full h-auto items-center rounded-lg border border-input bg-background p-1 shadow-sm'>
