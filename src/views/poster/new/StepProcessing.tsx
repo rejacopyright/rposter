@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearch } from '@tanstack/react-router'
 
-import { getJobStatus, getPosterPresets } from '@api/poster'
+import { getJobStatus } from '@api/poster'
 import { ActionButton } from '@components/custom/button'
 import {
   Accordion,
@@ -18,9 +18,6 @@ import { snakeToCamel, takeLast } from '@lib/fn'
 import { cn } from '@lib/utils'
 import type { WizardStepProps } from '@ts/poster'
 import { motion } from 'framer-motion'
-import groupBy from 'lodash/groupBy'
-import mapValues from 'lodash/mapValues'
-import startCase from 'lodash/startCase'
 import { ArrowLeft, ArrowRight, CircleCheck, Loader2 } from 'lucide-react'
 import { useWatch } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -29,7 +26,7 @@ export const StepProcessing = (props?: WizardStepProps) => {
   const search: any = useSearch({ from: '/poster/new' })
   const { onNext, onPrev } = props || {}
   const { control } = usePosterForm()
-  const { orientation, size, backgroundColor } = useWatch({ control })
+  const { backgroundColor } = useWatch({ control })
 
   const [currentStep, setCurrentStep] = useState(0)
   const [completed, setCompleted] = useState(false)
@@ -50,6 +47,7 @@ export const StepProcessing = (props?: WizardStepProps) => {
     if (data?.status === 'failed') toast.error('Failed to connect to SSE stream')
     if (data?.status !== 'completed') {
       setCurrentStep(data?.progress?.completed || 1)
+      setCompleted(false)
     } else {
       setCurrentStep((data?.progress?.completed || 1) + 1)
       setCompleted(true)
@@ -96,22 +94,6 @@ export const StepProcessing = (props?: WizardStepProps) => {
   const progressLabel = completed
     ? 'Multiple design variants already generated for you to review...'
     : `${thisStep.desc}...`
-
-  const posterPresetsQuery = getPosterPresets()
-  const posterPresets = posterPresetsQuery.data
-  // GET SIZE
-  const sizeData = posterPresets?.sizes || {}
-  const grouped = groupBy(sizeData, 'orientation')
-  const formattedSizes: object | undefined = mapValues(grouped, (items) =>
-    items.map((item) => ({
-      value: item?.key,
-      label: `${startCase(item?.type)} (${item?.dimensions?.width} x ${item?.dimensions?.height})`,
-      dimensions: item?.dimensions,
-    }))
-  )
-  const sizes = formattedSizes[orientation || 0] || []
-  const dimension = sizes?.find(({ value }) => value === size)?.dimensions
-  const ratio: number = parseFloat(((dimension?.width || 1) / (dimension?.height || 1)).toFixed(1))
 
   const last3 = takeLast(data?.partialResults?.designs, 3)
   const transcription = data?.partialResults?.transcription
@@ -261,7 +243,7 @@ export const StepProcessing = (props?: WizardStepProps) => {
               <div
                 className={cn(
                   'p-4 bg-gray-100 rounded-xl shadow-lg my-10 md:w-4/5 xl:w-3/4 mx-auto relative overflow-hidden',
-                  `aspect-[${ratio}]`
+                  `aspect-square`
                 )}>
                 <div className='absolute inset-0 shimmer z-0' />
               </div>

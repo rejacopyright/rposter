@@ -51,3 +51,6 @@ export const uploadJob = (id: string) => {
     },
   })
 }
+
+export const getDownloadUrl = (id: string, variant: string | number = 1) =>
+  axios.get(`jobs/${id}/download/${variant}`)

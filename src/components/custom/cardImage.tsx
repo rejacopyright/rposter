@@ -1,14 +1,27 @@
 import { useState } from 'react'
+import { useSearch } from '@tanstack/react-router'
 
+import { getDownloadUrl } from '@api/poster'
 import { Button } from '@components/ui/button'
-import { copyImageToClipboard, downloadImage } from '@lib/fn'
+import { copyImageToClipboard } from '@lib/fn'
 import { cn } from '@lib/utils'
 import { Copy, Download } from 'lucide-react'
 
 import { ActionButton } from './button'
 
-export const CardImage = ({ url, ext = 'png', grid = false }) => {
+export const CardImage = ({ url, ext = 'png', grid = false, variant = 1 }) => {
+  const { id }: any = useSearch({ from: '/poster/new' })
   const [isLoaded, setIsLoaded] = useState<boolean>(false)
+
+  const downloadImageFn = async () => {
+    if (id) {
+      const res = await getDownloadUrl(id, variant)
+      const downloadUrl = res.data?.downloadUrl
+      if (downloadUrl) {
+        window.open(downloadUrl, '_blank')
+      }
+    }
+  }
   return (
     <div className='flex flex-col min-h-[35vh]'>
       <div className='bg-gray-50 rounded-lg p-4'>
@@ -35,7 +48,7 @@ export const CardImage = ({ url, ext = 'png', grid = false }) => {
             <Copy size={20} />
             <span className='text-xs'>Copy{!grid && ' Image'}</span>
           </Button>
-          <ActionButton onClick={() => downloadImage({ url })}>
+          <ActionButton onClick={downloadImageFn}>
             <Download size={20} />
             <span className='ms-2 text-xs'>
               {!grid && 'Download '}
