@@ -1,4 +1,4 @@
-import { useSearch } from '@tanstack/react-router'
+import { useParams, useSearch } from '@tanstack/react-router'
 
 import { CardImage } from '@components/custom/cardImage'
 import { HTMLViewer } from '@components/custom/htmlViewer'
@@ -7,7 +7,10 @@ import { randomString, takeLast } from '@lib/fn'
 
 export const TabList = ({ data, variantId }) => {
   const designs = takeLast(data?.designs || [], 3)
-  const { id = '' }: any = useSearch({ strict: false })
+  let id = ''
+  const params = useParams({ strict: false })
+  if (params.id) id = params.id || ''
+  else id = (useSearch({ strict: false }) as any).id
   return (
     <Tabs value={variantId} className='mt-3'>
       {designs.map(({ imageUrl, format, html, variantNumber }, index: number) => {

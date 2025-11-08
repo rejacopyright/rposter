@@ -94,19 +94,6 @@ export const InputDebounce = (props: SearchboxProps) => {
         ) : (
           <XCircle className='size-5' color='transparent' />
         )}
-        {/* {!loading && !!val && (
-          <div className='position-absolute end-0' style={{ zIndex: 9 }}>
-            <div className='ps-1 pe-3 pt-2px'>
-              <i
-                className='fas fa-times-circle fs-16px text-dark cursor-default'
-                onClick={() => {
-                  setVal('')
-                  onChange('')
-                }}
-              />
-            </div>
-          </div>
-        )} */}
       </InputGroupAddon>
     </InputGroup>
   )
