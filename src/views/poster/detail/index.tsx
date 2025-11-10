@@ -5,7 +5,7 @@ import { getJobDetail } from '@api/poster'
 import { Button } from '@components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs'
 import { tabResultValue } from '@lib/constants'
-import { randomString, takeLast } from '@lib/fn'
+import { takeLast } from '@lib/fn'
 import type { TabResultProps } from '@ts/poster'
 import { ArrowLeft } from 'lucide-react'
 
@@ -40,9 +40,9 @@ export const PosterDetail = () => {
             {tabValue === 'list' && (
               <Tabs value={variantId}>
                 <TabsList>
-                  {designs.map((_, index: number) => (
+                  {designs.map(({ _id }, index: number) => (
                     <TabsTrigger
-                      key={randomString()}
+                      key={_id}
                       value={`variant_${index + 1}`}
                       onClick={() => setVariantId(`variant_${index + 1}`)}>
                       Variant {index + 1}
@@ -54,10 +54,7 @@ export const PosterDetail = () => {
             <Tabs value={tabValue}>
               <TabsList>
                 {tabResultValue.map(({ value, icon: LucidIcon }) => (
-                  <TabsTrigger
-                    key={randomString()}
-                    value={value}
-                    onClick={() => setTabValue(value)}>
+                  <TabsTrigger key={value} value={value} onClick={() => setTabValue(value)}>
                     <LucidIcon />
                   </TabsTrigger>
                 ))}
@@ -69,7 +66,7 @@ export const PosterDetail = () => {
       <Tabs value={tabValue} className='mt-3 mb-5'>
         {tabResultValue.map(({ value, content: Content }) => {
           return (
-            <TabsContent key={randomString()} value={value}>
+            <TabsContent key={value} value={value}>
               <Content data={job} variantId={variantId} />
             </TabsContent>
           )

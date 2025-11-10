@@ -3,7 +3,7 @@ import { useParams, useSearch } from '@tanstack/react-router'
 import { CardImage } from '@components/custom/cardImage'
 import { HTMLViewer } from '@components/custom/htmlViewer'
 import { Tabs, TabsContent } from '@components/ui/tabs'
-import { randomString, takeLast } from '@lib/fn'
+import { takeLast } from '@lib/fn'
 
 export const TabList = ({ data, variantId }) => {
   const designs = takeLast(data?.designs || [], 3)
@@ -13,9 +13,9 @@ export const TabList = ({ data, variantId }) => {
   else id = (useSearch({ strict: false }) as any).id
   return (
     <Tabs value={variantId} className='mt-3'>
-      {designs.map(({ imageUrl, format, html, variantNumber }, index: number) => {
+      {designs.map(({ _id, imageUrl, format, html, variantNumber }, index: number) => {
         return (
-          <TabsContent key={randomString()} value={`variant_${index + 1}`}>
+          <TabsContent key={_id} value={`variant_${index + 1}`}>
             {/* IMAGE VIEWER */}
             <CardImage url={imageUrl} ext={format} variant={variantNumber} id={id} />
             {/* COODE VIEWER */}

@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from '@tanstack/react-router'
 
 import { getPrompts } from '@api/prompts'
 import { Button } from '@components/ui/button'
-import { randomString } from '@lib/fn'
 
 import { HTMLEditor } from './HTMLEditor'
 
@@ -44,10 +43,10 @@ export const PromptsPage = () => {
           <div className='text-sm text-gray-500'>View and manage your Al prompts</div>
         </div>
         <div className='flex flex-col'>
-          {data.map(({ name }) => (
+          {data.map(({ _id, name }) => (
             <Button
               variant={location.hash === name?.replaceAll(' ', '_') ? 'secondary' : 'ghost'}
-              key={randomString()}
+              key={_id}
               onClick={() => scrollToSection(name?.replaceAll(' ', '_'))}
               className='justify-start'>
               <div className='truncate text-[11pt] font-normal'>{name}</div>
@@ -59,7 +58,7 @@ export const PromptsPage = () => {
       <div className='flex flex-col flex-auto md:flex-3 lg:flex-6 mt-2 mb-10'>
         {data.map((item) => (
           <div
-            key={randomString()}
+            key={item?._id}
             ref={(el) => {
               sectionsRef.current[item?.name?.replaceAll(' ', '_')] = el
             }}
