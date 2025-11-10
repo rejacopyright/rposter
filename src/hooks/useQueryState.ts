@@ -1,6 +1,6 @@
 import { useNavigate, useSearch } from '@tanstack/react-router'
 
-export function useQueryState<T extends string>(
+export function useQueryState<T extends string | number>(
   key: string,
   defaultValue: T
 ): [T, (value: T) => void] {
@@ -12,7 +12,7 @@ export function useQueryState<T extends string>(
   const setValue = (newValue: T) => {
     navigate({
       search: ((prev: unknown) => ({
-        ...(prev as Record<string, string | undefined>),
+        ...(prev as Record<string, string | number | undefined>),
         [key]: newValue,
       })) as any,
       replace: true,

@@ -22,7 +22,7 @@ export const GalleryPage = () => {
       <div className='sticky top-0 pt-5 pb-2 bg-white z-10'>
         <div className='mb-4'>
           <div className='font-medium'>Gallery</div>
-          <div className='text-sm text-gray-500'>Browse your Al-generated poster collection</div>
+          <div className='text-sm text-gray-500'>Browse your AI-generated poster collection</div>
         </div>
         <div className='flex items-center justify-between'>
           <Tabs value={category}>
@@ -40,10 +40,7 @@ export const GalleryPage = () => {
             <Tabs value={viewMode}>
               <TabsList>
                 {tabGallery.map(({ value, icon: LucidIcon }) => (
-                  <TabsTrigger
-                    key={randomString()}
-                    value={value}
-                    onClick={() => setViewMode(value)}>
+                  <TabsTrigger key={value} value={value} onClick={() => setViewMode(value)}>
                     <LucidIcon />
                   </TabsTrigger>
                 ))}
@@ -52,14 +49,13 @@ export const GalleryPage = () => {
           </div>
         </div>
       </div>
+
       <Tabs value={viewMode} className='mt-3 mb-5'>
-        {tabGallery.map(({ value, content: Content }) => {
-          return (
-            <TabsContent key={randomString()} value={value}>
-              <Content data={data} category={category} />
-            </TabsContent>
-          )
-        })}
+        {tabGallery.map(({ value, content: Content }) => (
+          <TabsContent key={value} value={value}>
+            <Content data={allJobs} category={category} />
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   )
