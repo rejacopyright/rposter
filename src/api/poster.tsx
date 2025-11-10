@@ -3,6 +3,7 @@ import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tansta
 import axios from '@lib/axios'
 import type { JobParamProps } from '@ts/poster'
 import flatMap from 'lodash/flatMap'
+import omit from 'lodash/omit'
 
 export const getPosterPresets = () => {
   return useQuery({
@@ -22,7 +23,7 @@ export const getJobs = (params?: JobParamProps) => {
 
 export const getPaginatedJobs = (params?: JobParamProps) => {
   return useInfiniteQuery({
-    queryKey: ['paginatedJobs'],
+    queryKey: ['paginatedJobs', omit(params || {}, ['page'])],
     queryFn: ({ pageParam = 1 }) => axios.get('jobs', { params: { ...params, page: pageParam } }),
     select: (res: any) => {
       const result = { ...res, pages: flatMap(res?.pages, 'data.data') }
@@ -39,7 +40,7 @@ export const getPaginatedJobs = (params?: JobParamProps) => {
 
 export const getJobStatus = (id: string) => {
   return useQuery({
-    queryKey: ['getJobStatus'],
+    queryKey: ['getJobStatus', { id }],
     queryFn: () => axios.get(`jobs/${id}/processing-status`),
     select: ({ data }) => data || {},
     refetchInterval: 5000,
