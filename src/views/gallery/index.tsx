@@ -49,7 +49,7 @@ export const GalleryPage = () => {
           <Tabs value={category}>
             <TabsList>
               <TabsTrigger value='all' onClick={() => setCategory('all')}>
-                All
+                All Posters
               </TabsTrigger>
               <TabsTrigger value='favorites' onClick={() => setCategory('favorites')}>
                 Favorites
@@ -57,7 +57,12 @@ export const GalleryPage = () => {
             </TabsList>
           </Tabs>
           <div className='flex gap-3'>
-            <InputDebounce controlled defaultValue={keyword} onChange={setKeyword} />
+            <InputDebounce
+              controlled
+              defaultValue={keyword}
+              onChange={setKeyword}
+              placeholder='Search anything...'
+            />
             <Tabs value={viewMode}>
               <TabsList>
                 {tabGallery.map(({ value, icon: LucidIcon }) => (
