@@ -70,6 +70,7 @@ export const createJob = () => {
     mutationFn: () => axios.post('jobs/create'),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['getJobs'], exact: false })
+      qc.invalidateQueries({ queryKey: ['paginatedJobs'], exact: false })
     },
   })
 }
@@ -83,6 +84,7 @@ export const uploadJob = (id: string) => {
       }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['getJobs'], exact: false })
+      qc.invalidateQueries({ queryKey: ['paginatedJobs'], exact: false })
     },
   })
 }
