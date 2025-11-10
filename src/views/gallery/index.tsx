@@ -1,11 +1,11 @@
+import { useEffect, useRef } from 'react'
 import { useSearch } from '@tanstack/react-router'
 
-import { getJobs } from '@api/poster'
+import { getPaginatedJobs } from '@api/poster'
 import { InputDebounce } from '@components/custom/InputDebounce'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@components/ui/tabs'
 import { useQueryState } from '@hooks/useQueryState'
 import { tabGallery } from '@lib/constants'
-import { randomString } from '@lib/fn'
 import type { TabGalleryProps } from '@ts/gallery'
 
 export const GalleryPage = () => {
@@ -15,7 +15,28 @@ export const GalleryPage = () => {
   const [category, setCategory] = useQueryState<string>('category', cat || 'all')
   const [keyword, setKeyword] = useQueryState<string>('keyword', q || '')
 
-  const { data = [] } = getJobs({ limit: 20, status: 'completed', viewMode, category, keyword })
+  const loadMoreRef = useRef<HTMLDivElement | null>(null)
+
+  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, isPlaceholderData } =
+    getPaginatedJobs({ limit: 10, status: 'completed', category, keyword })
+
+  const allJobs = data?.pages || []
+
+  useEffect(() => {
+    if (!loadMoreRef.current || !hasNextPage) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !isFetchingNextPage && !isPlaceholderData) {
+          fetchNextPage()
+        }
+      },
+      { threshold: 1 }
+    )
+    observer.observe(loadMoreRef.current)
+
+    return () => observer.disconnect()
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage, isPlaceholderData])
 
   return (
     <div className='lg:px-10'>
@@ -57,6 +78,14 @@ export const GalleryPage = () => {
           </TabsContent>
         ))}
       </Tabs>
+
+      <div ref={loadMoreRef} className='py-8 text-center text-gray-500'>
+        {isFetchingNextPage || isFetching
+          ? 'Loading...'
+          : hasNextPage
+            ? 'Scroll for more'
+            : 'No more data'}
+      </div>
     </div>
   )
 }

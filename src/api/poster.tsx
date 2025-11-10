@@ -1,7 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import axios from '@lib/axios'
 import type { JobParamProps } from '@ts/poster'
+import flatMap from 'lodash/flatMap'
 
 export const getPosterPresets = () => {
   return useQuery({
@@ -16,6 +17,23 @@ export const getJobs = (params?: JobParamProps) => {
     queryKey: ['getJobs', { ...(params || {}) }],
     queryFn: () => axios.get('jobs', { params }),
     select: ({ data }) => data?.data || [],
+  })
+}
+
+export const getPaginatedJobs = (params?: JobParamProps) => {
+  return useInfiniteQuery({
+    queryKey: ['paginatedJobs'],
+    queryFn: ({ pageParam = 1 }) => axios.get('jobs', { params: { ...params, page: pageParam } }),
+    select: (res: any) => {
+      const result = { ...res, pages: flatMap(res?.pages, 'data.data') }
+      return result
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage: any) => {
+      const hasNext = lastPage?.data?.pagination?.hasNextPage
+      if (hasNext) return lastPage.data.pagination.currentPage + 1
+      return undefined
+    },
   })
 }
 
